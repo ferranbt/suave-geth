@@ -66,4 +66,4 @@ release:
 		-v `pwd`/sysroot:/sysroot \
 		-w /go/src/$(PACKAGE_NAME) \
 		ghcr.io/goreleaser/goreleaser-cross:v1.19.5 \
-		release --clean --auto-snapshot
+		release --clean --auto-snapshot $(EXTRAFLAGS)

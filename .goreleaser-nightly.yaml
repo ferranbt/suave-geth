@@ -1,0 +1,41 @@
+env:
+  - CGO_ENABLED=1
+builds:
+  - id: suave-geth-darwin-amd64
+    binary: suave-geth
+    main: ./cmd/geth
+    goarch:
+      - amd64
+    goos:
+      - darwin
+    env:
+      - CC=o64-clang
+      - CXX=o64-clang++
+    flags:
+      - -trimpath
+
+archives:
+  - id: w/version
+    builds:
+      - suave-geth-darwin-amd64
+      - suave-geth-darwin-arm64
+      - suave-geth-linux-amd64
+      - suave-geth-linux-arm64
+      - suave-geth-windows-amd64
+    name_template: "suave-geth_v{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: false
+    format: zip
+    files:
+      - none*
+
+checksum:
+  name_template: "checksums.txt"
+
+nightly:
+  name_template: "{{ incpatch .Version }}-nightly"
+  tag_name: latest-nightly
+  publish_release: true
+  keep_single_release: true
+
+release:
+  draft: false
