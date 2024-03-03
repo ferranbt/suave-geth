@@ -11,18 +11,16 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v4
 
-      - name: "Push new tag"
-        run: |
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+      - name: Fetch all tags
+        run: git fetch --tags
 
-          # A previous release was created using a lightweight tag
-          # git describe by default includes only annotated tags
-          # git describe --tags includes lightweight tags as well
-          DESCRIBE=`git tag -l --sort=-v:refname | grep -v nightly | head -n 1`
-          MAJOR_VERSION=`echo $DESCRIBE | awk '{split($0,a,"."); print a[1]}'`
-          MINOR_VERSION=`echo $DESCRIBE | awk '{split($0,a,"."); print a[2]}'`
-          MINOR_VERSION="$((${MINOR_VERSION} + 1))"
-          TAG="${MAJOR_VERSION}.${MINOR_VERSION}.0-nightly.$(date +'%Y%m%d')"
-          git tag -a $TAG -m "$TAG: nightly build"
-          git push origin $TAG
+      - name: Determine the latest commit on main
+        id: latest_commit
+        run: echo "::set-output name=commit_sha::$(git rev-parse main)"
+
+      - name: Create nightly tag
+        run: |
+          commit_sha=${{ steps.latest_commit.outputs.commit_sha }}
+          tag_name="nightly-$(date +'%Y%m%d')"
+          git tag -f $tag_name $commit_sha
+          git push origin $tag_name --force
