@@ -24,4 +24,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
+          GORELEASER_KEY: ${{ secrets.GORELEASERPRO_KEY }}
           EXTRAFLAGS: "--nightly --config .goreleaser-nightly.yaml"
