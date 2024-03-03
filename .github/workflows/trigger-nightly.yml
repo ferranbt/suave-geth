@@ -18,9 +18,11 @@ jobs:
         id: latest_commit
         run: echo "::set-output name=commit_sha::$(git rev-parse main)"
 
-      - name: Create nightly tag
-        run: |
-          commit_sha=${{ steps.latest_commit.outputs.commit_sha }}
-          tag_name="nightly-$(date +'%Y%m%d')"
-          git tag -f $tag_name $commit_sha
-          git push origin $tag_name --force
+      - uses: rickstaa/action-create-tag@v1
+        id: "tag_create"
+        with:
+          tag: "nightly-$(date +'%Y%m%d')"
+          force_push_tag: true
+          commit_sha: ${{ steps.latest_commit.outputs.commit_sha }}
+          message: "Latest nightly build"
+          github_token: ${{ secrets.PAT }}
